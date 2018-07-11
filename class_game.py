@@ -70,7 +70,7 @@ class Game_2048:
     def update(self, mouv):
         if self.state == 1:
             mouv()
-            g.next_state()
+            self.next_state()
             self.update_state()
         else :
             self.end()
@@ -84,7 +84,8 @@ g = Game_2048(4)
 print(g.grid)
 nb_coups = 0
 while g.state == 1:
-    p = [g.up,g.down,g.right,g.left][nb_coups%4]
+    p = [g.up,g.down,g.right,g.left][np.random.randint(0,4)]
+    #p = [g.up,g.down,g.right,g.left][nb_coups%4]
     g.update(p)
     nb_coups += 1
     
