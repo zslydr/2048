@@ -9,6 +9,7 @@ Created on Thu Jul 12 22:38:07 2018
 import os
 import importlib
 import numpy as np
+import pandas as pd
 os.chdir('/Users/Raphael/Github/2048/scripts/') #Select your working directory
 cwd = os.getcwd()
 G_2048=importlib.import_module("2048_class")
@@ -43,9 +44,38 @@ W2 = np.random.randn(model.hidden_sizes, model.output_size)
 
 W = [W1,W2] # Initialize ONE individual
 
-
 score = score_weight(game, model, W) # SCORE of the inidividual
 print(score)
 game.display()
+
+#%%
+model = NN.NNet(16,4,1,16)
+n_pop = 50
+population = {}
+
+for i in range(n_pop):
+    population[i] = {}
+    W1 = np.random.randn(model.input_size, model.hidden_sizes)
+    W2 = np.random.randn(model.hidden_sizes, model.output_size)
+    W = [W1,W2]
+    population[i]['weight'] = W
+
+for i in range(n_pop):
+    game = G_2048.Game_2048(4)
+    population[i]['score'] = score_weight(game, model, population[i]['weight'])
+
+df = pd.DataFrame.from_dict(population, orient = 'index')
+
+df = df.sort_values(by = "score", ascending = False)
+
+n_best = 10
+n_lucky = 10
+
+breeders = [x for x in range(10)]
+breeders.extend(np.random.choice(range(n_best,50), n_lucky, replace = False))
+
+df.iloc[breeders]
+
+
 
 
