@@ -10,6 +10,7 @@ import os
 import importlib
 import numpy as np
 import pandas as pd
+import seaborn as sns
 os.chdir('/Users/Raphael/Github/2048/scripts/') #Select your working directory
 cwd = os.getcwd()
 G_2048=importlib.import_module("2048_class")
@@ -17,8 +18,9 @@ G_2048=importlib.reload(G_2048)
 NN=importlib.import_module("NN_class")
 NN=importlib.reload(NN)
 
-#%% SCORE FUNCTION BASED ON THE WEIGHTS OF THE NN
+#%% 
 
+# SCORE FUNCTION BASED ON THE WEIGHTS OF THE NN
 def score_weight(game, model, W):
     # Indicate if the game is stuck (because NN can loop over a useless move without the game being lost)
     stuck = False 
@@ -33,49 +35,115 @@ def score_weight(game, model, W):
             stuck = False
     return(game.score())
 
+# FUNCTION TO BREED TWO  NEURAL NETWORK WEIGHTS
+def breed(W1, W2, nb_children):
+    children = []
+    for i in range(nb_children):
+        child_W = []
+        for w1,w2 in zip(W1,W2):
+            child_w = np.array([])
+            for x,y in zip(w1.reshape(np.product(w1.shape)),w2.reshape(np.product(w2.shape))):
+                if np.random.uniform() > 0.5:
+                    child_w = np.append(child_w,x)
+                else:
+                    child_w = np.append(child_w,y)
+            child_w = child_w.reshape(w1.shape)
+            child_W.append(child_w)
+        children.append(child_W)
+    return(children)
+
+# FUNCTION TO PERFORM A MUTATION TO A NEURAL NETWORK WEIGHT
+def mutation(W, sigma, mu):
+    new_W = []
+    for w in W:
+        new_w = np.array([])
+        for x in w.reshape(np.product(w.shape)):
+            if np.random.uniform() < .3:
+                new_w = np.append(new_w, sigma * np.random.randn() + mu)
+            else:
+                new_w = np.append(new_w, x)
+        new_w = new_w.reshape(w.shape)
+        new_W.append(new_w)
+    return(new_W)
+            
+
+
+
 #%%
+# EXEMPLE SUR UNE GENERATION
 game = G_2048.Game_2048(4) # Initialize the game grid
 
 
-model = NN.NNet(16,4,1,16) # Initialize the type of the NN (or population in our case)
+model = NN.NNet(16,4,1,(16,8)) # Initialize the type of the NN (or population in our case)
+W = []
+s = model.input_size
+for size in model.hidden_sizes:
+    W.append(np.random.randn(s, size))
+    s = size
 
-W1 = np.random.randn(model.input_size, model.hidden_sizes)
-W2 = np.random.randn(model.hidden_sizes, model.output_size)
+W.append(np.random.randn(model.hidden_sizes[-1], model.output_size))
 
-W = [W1,W2] # Initialize ONE individual
 
 score = score_weight(game, model, W) # SCORE of the inidividual
 print(score)
 game.display()
 
 #%%
-model = NN.NNet(16,4,1,16)
+model = NN.NNet(16,4,1,(16,8))
+sigma = 5
+mu = 0
 n_pop = 50
+n_generations = 100
 population = {}
+res_generation = []
 
 for i in range(n_pop):
     population[i] = {}
-    W1 = np.random.randn(model.input_size, model.hidden_sizes)
-    W2 = np.random.randn(model.hidden_sizes, model.output_size)
-    W = [W1,W2]
+    W = []
+    s = model.input_size
+    for size in model.hidden_sizes:
+        W.append(np.random.randn(s, size))
+        s = size
+    W.append(np.random.randn(model.hidden_sizes[-1], model.output_size))
+
     population[i]['weight'] = W
+
+
+for generations in range(n_generations):
+    
+    for i in range(n_pop):
+        game = G_2048.Game_2048(4)
+        population[i]['score'] = score_weight(game, model, population[i]['weight'])
+    
+    df = pd.DataFrame.from_dict(population, orient = 'index')
+    
+    df = df.sort_values(by = "score", ascending = False)
+    
+    print("génération ", generations, "best score: ", df.loc[0]["score"])
+    res_generation.append(df.loc[0]["score"])
+    
+    n_best = 20
+    n_lucky = 5
+    
+    breeders_ind = [x for x in range(n_best)]
+    breeders_ind.extend(np.random.choice(range(n_best,50), n_lucky, replace = False))
+    
+    breeders = df.iloc[breeders_ind].index.values
+    population = {}
+    for i in range(int(n_pop/2)):
+        parents = np.random.choice(breeders, 2, replace = False)
+        children = breed(df.loc[parents[0]]["weight"], df.loc[parents[1]]["weight"], 2)
+        for j,child in enumerate(children):
+            population[2*i+j] = {}
+            population[2*i+j]["weight"] = mutation(child, sigma, mu)
+
 
 for i in range(n_pop):
     game = G_2048.Game_2048(4)
     population[i]['score'] = score_weight(game, model, population[i]['weight'])
-
 df = pd.DataFrame.from_dict(population, orient = 'index')
-
 df = df.sort_values(by = "score", ascending = False)
-
-n_best = 10
-n_lucky = 10
-
-breeders = [x for x in range(10)]
-breeders.extend(np.random.choice(range(n_best,50), n_lucky, replace = False))
-
-df.iloc[breeders]
-
-
-
-
+print("génération ", generations, "best score: ", df.loc[0]["score"])
+res_generation.append(df.loc[0]["score"])
+#%%
+sns.tsplot(res_generation)
