@@ -1,5 +1,6 @@
 import numpy as np
 import seaborn as sns
+import matplotlib.pyplot as plt
 
 def superposition_layer(l1,l2):
     for i in range(len(l1)):
@@ -74,6 +75,13 @@ class Game_2048:
             self.end()
             
     def display(self):
-        sns.heatmap(self.grid, annot=True, linewidths=.5)
+        sns.heatmap(self.grid, annot=True, linewidths=.5, cbar=False)
+        plt.tick_params(
+                which='both', 
+                bottom=False, 
+                left = False,
+                labelleft = False,
+                labelbottom=False)
+        plt.show()
 
 

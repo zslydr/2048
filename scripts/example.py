@@ -12,7 +12,7 @@ import numpy as np
 import seaborn as sns
 os.chdir('/Users/Raphael/Github/2048/scripts/') #Select your working directory
 cwd = os.getcwd()
-G_2048=importlib.import_module("class_game")
+G_2048=importlib.import_module("2048_class")
 G_2048=importlib.reload(G_2048)
 
 #%% EXAMPLE
