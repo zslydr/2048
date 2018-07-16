@@ -47,3 +47,31 @@ for i in range(n):
 
 sns.tsplot(score)
 
+#%%
+g = G_2048.Game_2048(4)
+g.grid
+#%%
+g.update(g.up)
+g.grid
+#%%
+g.update(g.down)
+g.grid
+#%%
+g.update(g.left)
+g.grid
+#%%
+g.update(g.right)
+g.grid
+
+
+
+
+
+
+
+
+
+
+
+
+

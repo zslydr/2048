@@ -12,7 +12,7 @@ def superposition_layer(l1,l2):
             l2[i] = 0
     return(l1,l2)
 
-class Game_2048:
+class Game_2048(object):
     
     def __init__(self,n):
         self.n = n
@@ -38,20 +38,24 @@ class Game_2048:
         return(int(np.sum(self.grid)))
     
     def up(self):
-        for i in range(self.n-1,0,-1):
-            self.grid[i-1,:],self.grid[i,:] = superposition_layer(self.grid[i-1, :],self.grid[i, :])
+        for k in range(self.n-1,0,-1):
+            for i in range(k):
+                self.grid[i,:],self.grid[i+1,:] = superposition_layer(self.grid[i, :],self.grid[i+1, :])
     
     def down(self):
-        for i in range(self.n-1):
-            self.grid[i+1][:],self.grid[i, :] = superposition_layer(self.grid[i+1, :],self.grid[i, :])
+        for k in range(self.n):
+            for i in range(self.n - 1, k, -1):
+                self.grid[i][:],self.grid[i-1, :] = superposition_layer(self.grid[i, :],self.grid[i-1, :])
             
     def right(self):
-        for j in range(self.n-1):
-            self.grid[:, j+1], self.grid[:, j] = superposition_layer(self.grid[:, j+1],self.grid[:, j])
+        for k in range(self.n):
+            for j in range(self.n - 1, k, -1):
+                self.grid[:, j], self.grid[:, j-1] = superposition_layer(self.grid[:, j],self.grid[:, j-1])
         
     def left(self):
-        for j in range(self.n-1,0,-1):
-            self.grid[:, j-1],self.grid[:, j] = superposition_layer(self.grid[:, j-1],self.grid[:, j])
+        for k in range(self.n-1,0,-1):
+            for j in range(k):
+                self.grid[:, j],self.grid[:, j+1] = superposition_layer(self.grid[:, j],self.grid[:, j+1])
             
     def update_state(self):
         self.state = 0
@@ -75,6 +79,7 @@ class Game_2048:
             self.end()
             
     def display(self):
+        #fig, ax = plt.subplots()
         sns.heatmap(self.grid, annot=True, linewidths=.5, cbar=False)
         plt.tick_params(
                 which='both', 
@@ -83,5 +88,9 @@ class Game_2048:
                 labelleft = False,
                 labelbottom=False)
         plt.show()
+    
+    def interactup(self, event):
+        self.update(self.update(self.up))
+        print(self.grid)
 
 

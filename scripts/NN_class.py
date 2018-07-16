@@ -19,6 +19,9 @@ class NNet:
     def sigmoid(self, s):
         return 1/(1+np.exp(-s))
     
+    def softmax(self, last_layer):
+        return(np.array(last_layer / sum(np.exp(last_layer))))
+    
     def relu(self,s):
         return(np.array([max(0,x) for x in s]))
     
@@ -28,8 +31,6 @@ class NNet:
     def forward(self, input_, weights):
         l = input_
         for w in weights:
-            l = self.relu(np.dot(l,w))
-        return(self.activation(l))
-        
-
-
+            l_ = np.dot(l,w)
+            l = self.sigmoid(l_)
+        return(self.softmax(l_))
