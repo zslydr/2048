@@ -33,7 +33,7 @@ def score_weight(game, model, W):
         p = model.forward(game.grid.reshape(16),W) # Forward propagation with the grid as input
         action_ind = p.argmax() # Get the action index to perform
         action = [game.up,game.down,game.right,game.left][action_ind] # Select the action to perform
-        game.update(action) # Perform the action
+        action() # Perform the action
         if (previous_grid != game.grid).any() or (game.grid == 0).any(): #Check if the game is not stuck
             stuck = False
         s = s + game.score() - previous_score
@@ -105,10 +105,10 @@ print(score)
 game.display()
 
 #%%
-model = NN.NNet(16,4,2,(32,16))
+model = NN.NNet(16,4,2,(16,))
 sigma = 100
 mu = 0
-n_pop = 120
+n_pop = 50
 n_generations = 100
 population = {}
 res_generation = []

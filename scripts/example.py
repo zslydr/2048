@@ -24,7 +24,7 @@ while g.state == 1:
     #p = [g.up,g.right][np.random.randint(0,2)]
     #p = [g.up,g.down,g.right,g.left][np.random.randint(0,4)]
     p = [g.up,g.down,g.right,g.left][nb_coups%4]
-    g.update(p)
+    p()
     nb_coups += 1
     
 print("Game over, score: ",g.score())
@@ -41,28 +41,11 @@ for i in range(n):
         p = [g.up,g.right][np.random.randint(0,2)]
         #p = [g.up,g.down,g.right,g.left][np.random.randint(0,4)]
         #p = [g.up,g.down,g.right,g.left][nb_coups%4]
-        g.update(p)
+        p()
         nb_coups += 1
     score.append(g.score())
 
 sns.tsplot(score)
-
-#%%
-g = G_2048.Game_2048(4)
-g.grid
-#%%
-g.update(g.up)
-g.grid
-#%%
-g.update(g.down)
-g.grid
-#%%
-g.update(g.left)
-g.grid
-#%%
-g.update(g.right)
-g.grid
-
 
 
 

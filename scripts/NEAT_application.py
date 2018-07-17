@@ -28,7 +28,7 @@ def score_weight(game, net):
         p = net.activate(game.grid.reshape(16))
         action_ind = np.array(p).argmax() # Get the action index to perform
         action = [game.up,game.down,game.right,game.left][action_ind] # Select the action to perform
-        game.update(action) # Perform the action
+        action() # Perform the action
         if (previous_grid != game.grid).any() or (game.grid == 0).any(): #Check if the game is not stuck
             stuck = False
         s = s + game.score() - previous_score
