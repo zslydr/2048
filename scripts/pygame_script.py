@@ -22,9 +22,10 @@ pygame.font.init()
 my_font = pygame.font.Font(None, 32)
 
 # Define some colors
-colors = sns.color_palette("Oranges", 15)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
+GREY = (220/255, 220/255, 220/255)
+colors = [GREY] + sns.color_palette("Oranges", 15)
 font_color = BLACK
 
 values = [0] + [2**x for x in range(1,15)]
@@ -40,7 +41,7 @@ MARGIN = 5
 pygame.init()
  
 # Set the width and height of the screen [width, height]
-size = [(WIDTH+10)*game.n, (WIDTH+10)*game.n]
+size = [(WIDTH)*game.n + 5 * MARGIN, (WIDTH)*game.n + 5 * MARGIN]
 screen = pygame.display.set_mode(size)
  
 pygame.display.set_caption("My Game")
@@ -58,16 +59,16 @@ while not done:
         if event.type == pygame.QUIT:
             done = True
         if event.type == pygame.KEYUP and event.key == pygame.K_DOWN:
-            game.update(game.down)
+            game.down()
         if event.type == pygame.KEYUP and event.key == pygame.K_UP:
-            game.update(game.up)
+            game.up()
         if event.type == pygame.KEYUP and event.key == pygame.K_RIGHT:
-            game.update(game.right)
+            game.right()
         if event.type == pygame.KEYUP and event.key == pygame.K_LEFT:
-            game.update(game.left)
+            game.left()
             
             
-    screen.fill(BLACK)
+    screen.fill(WHITE)
     
     # DRAW THE GRID
     for row in range(game.n):

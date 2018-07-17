@@ -3,6 +3,8 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 def superposition_layer(l1,l2):
+    l1_previous = l1
+    l2_previous = l2
     for i in range(len(l1)):
         if l1[i] == 0:
             l1[i] = l2[i]
@@ -10,6 +12,7 @@ def superposition_layer(l1,l2):
         elif l1[i] == l2[i]:
             l1[i] = l1[i]*2
             l2[i] = 0
+    
     return(l1,l2)
 
 class Game_2048(object):
@@ -24,7 +27,7 @@ class Game_2048(object):
         print("Game over, score: ",self.score())
         
     def next_state(self):
-        number = np.random.randint(1,3)*2
+        number = np.random.choice([2,4], 1, p = [0.8, 0.2])
         possible_next_position = []
         for i in range(self.n):
             for j in range(self.n):
@@ -38,24 +41,48 @@ class Game_2048(object):
         return(int(np.sum(self.grid)))
     
     def up(self):
-        for k in range(self.n-1,0,-1):
-            for i in range(k):
-                self.grid[i,:],self.grid[i+1,:] = superposition_layer(self.grid[i, :],self.grid[i+1, :])
+        if self.state == 1:
+            for k in range(self.n-1,0,-1):
+                for i in range(k):
+                    superposition_layer(self.grid[i, :],self.grid[i+1, :])
+            self.next_state()
+            self.update_state()
+        else:
+            self.end()
+
     
     def down(self):
-        for k in range(self.n):
-            for i in range(self.n - 1, k, -1):
-                self.grid[i][:],self.grid[i-1, :] = superposition_layer(self.grid[i, :],self.grid[i-1, :])
+        if self.state == 1:
+            for k in range(self.n):
+                for i in range(self.n - 1, k, -1):
+                    superposition_layer(self.grid[i, :],self.grid[i-1, :])
+                    
+            self.next_state()
+            self.update_state()
+        else :
+            self.end()
             
     def right(self):
-        for k in range(self.n):
-            for j in range(self.n - 1, k, -1):
-                self.grid[:, j], self.grid[:, j-1] = superposition_layer(self.grid[:, j],self.grid[:, j-1])
+        if self.state == 1:
+            for k in range(self.n):
+                for j in range(self.n - 1, k, -1):
+                    superposition_layer(self.grid[:, j],self.grid[:, j-1])
+                    
+            self.next_state()
+            self.update_state()
+        else :
+            self.end()
         
     def left(self):
-        for k in range(self.n-1,0,-1):
-            for j in range(k):
-                self.grid[:, j],self.grid[:, j+1] = superposition_layer(self.grid[:, j],self.grid[:, j+1])
+        if self.state == 1:
+            for k in range(self.n-1,0,-1):
+                for j in range(k):
+                    superposition_layer(self.grid[:, j],self.grid[:, j+1])
+                    
+            self.next_state()
+            self.update_state()
+        else :
+            self.end()
             
     def update_state(self):
         self.state = 0
@@ -72,8 +99,12 @@ class Game_2048(object):
     
     def update(self, mouv):
         if self.state == 1:
+            previous_grid = self.grid
+            print(previous_grid)
             mouv()
-            self.next_state()
+            print(previous_grid)
+            if (self.grid != previous_grid).any():
+                self.next_state()
             self.update_state()
         else :
             self.end()
@@ -88,9 +119,5 @@ class Game_2048(object):
                 labelleft = False,
                 labelbottom=False)
         plt.show()
-    
-    def interactup(self, event):
-        self.update(self.update(self.up))
-        print(self.grid)
 
 
