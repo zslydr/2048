@@ -32,7 +32,7 @@ values = [0] + [2**x for x in range(1,15)]
 
 
 # This sets the WIDTH and HEIGHT of each grid location
-WIDTH = 50
+WIDTH = 100
 HEIGHT = WIDTH
  
 # This sets the margin between each cell
@@ -88,7 +88,7 @@ while not done:
     pygame.display.flip()
  
     # --- Limit to 10 frames per second
-    clock.tick(10)
+    clock.tick(30)
  
 # Close the window and quit.
 pygame.quit()

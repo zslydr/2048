@@ -86,6 +86,10 @@ class Game_2048(object):
             
     def update_state(self):
         self.state = 0
+        if (self.grid == 0).any():
+            self.state =1
+            return(None)
+        
         for i in range(self.n):
             for j in range(self.n):
                 for k in range(3):
@@ -96,18 +100,7 @@ class Game_2048(object):
                                 if self.grid[i, j] == self.grid[i+k-1, j+p-1]:
                                     self.state = 1
                                     break
-    
-    def update(self, mouv):
-        if self.state == 1:
-            previous_grid = self.grid
-            print(previous_grid)
-            mouv()
-            print(previous_grid)
-            if (self.grid != previous_grid).any():
-                self.next_state()
-            self.update_state()
-        else :
-            self.end()
+
             
     def display(self):
         #fig, ax = plt.subplots()
