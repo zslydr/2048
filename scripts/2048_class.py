@@ -2,16 +2,18 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-def superposition_layer(l1,l2):
-    l1_previous = l1
-    l2_previous = l2
+def superposition_layer(l1,l2, e1, e2):
     for i in range(len(l1)):
         if l1[i] == 0:
             l1[i] = l2[i]
             l2[i] = 0
         elif l1[i] == l2[i]:
-            l1[i] = l1[i]*2
-            l2[i] = 0
+            if l1[i] > 0 and e1[i] == False and e2[i] == False:
+                l1[i] = l1[i]*2
+                l2[i] = 0
+                e1[i] = True
+            #else:
+                #l1[i] = l1[i]*2
     
     return(l1,l2)
 
@@ -19,23 +21,27 @@ class Game_2048(object):
     
     def __init__(self,n):
         self.n = n
-        self.grid = np.repeat(np.zeros(n),n).reshape((n,n))
-        self.next_state()
+        self.grid = np.zeros((n,n))
         self.state = 1
+        self.next_state()
+        self.has_evolved = np.zeros((n,n), dtype=bool)
     
     def end(self):
         print("Game over, score: ",self.score())
         
     def next_state(self):
-        number = np.random.choice([2,4], 1, p = [0.8, 0.2])
-        possible_next_position = []
-        for i in range(self.n):
-            for j in range(self.n):
-                if self.grid[i, j] == 0:
-                    possible_next_position.append((i,j))
-        if len(possible_next_position) != 0:
-            ind = np.random.randint(0,len(possible_next_position))
-            self.grid[possible_next_position[ind][0], possible_next_position[ind][1]] = number
+        if self.state == 1:
+            number = np.random.choice([2,4], 1, p = [0.8, 0.2])
+            possible_next_position = []
+            for i in range(self.n):
+                for j in range(self.n):
+                    if self.grid[i, j] == 0:
+                        possible_next_position.append((i,j))
+            if len(possible_next_position) != 0:
+                ind = np.random.randint(0,len(possible_next_position))
+                self.grid[possible_next_position[ind][0], possible_next_position[ind][1]] = number
+            #self.next_state()
+            self.update_state()
         
     def score(self):
         return(int(np.sum(self.grid)))
@@ -44,9 +50,9 @@ class Game_2048(object):
         if self.state == 1:
             for k in range(self.n-1,0,-1):
                 for i in range(k):
-                    superposition_layer(self.grid[i, :],self.grid[i+1, :])
+                    superposition_layer(self.grid[i, :], self.grid[i+1, :], self.has_evolved[i, :], self.has_evolved[i+1, :])
             self.next_state()
-            self.update_state()
+            self.has_evolved = np.zeros((self.n,self.n), dtype=bool)
         else:
             self.end()
 
@@ -55,10 +61,9 @@ class Game_2048(object):
         if self.state == 1:
             for k in range(self.n):
                 for i in range(self.n - 1, k, -1):
-                    superposition_layer(self.grid[i, :],self.grid[i-1, :])
-                    
+                    superposition_layer(self.grid[i, :],self.grid[i-1, :], self.has_evolved[i, :], self.has_evolved[i-1, :])
             self.next_state()
-            self.update_state()
+            self.has_evolved = np.zeros((self.n,self.n), dtype=bool)
         else :
             self.end()
             
@@ -66,10 +71,9 @@ class Game_2048(object):
         if self.state == 1:
             for k in range(self.n):
                 for j in range(self.n - 1, k, -1):
-                    superposition_layer(self.grid[:, j],self.grid[:, j-1])
-                    
-            self.next_state()
-            self.update_state()
+                    superposition_layer(self.grid[:, j],self.grid[:, j-1], self.has_evolved[:, j], self.has_evolved[:, j-1])
+            self.next_state()    
+            self.has_evolved = np.zeros((self.n,self.n), dtype=bool)
         else :
             self.end()
         
@@ -77,17 +81,16 @@ class Game_2048(object):
         if self.state == 1:
             for k in range(self.n-1,0,-1):
                 for j in range(k):
-                    superposition_layer(self.grid[:, j],self.grid[:, j+1])
-                    
+                    superposition_layer(self.grid[:, j],self.grid[:, j+1], self.has_evolved[:, j], self.has_evolved[:, j+1])
             self.next_state()
-            self.update_state()
+            self.has_evolved = np.zeros((self.n,self.n), dtype=bool)
         else :
             self.end()
             
     def update_state(self):
         self.state = 0
         if (self.grid == 0).any():
-            self.state =1
+            self.state = 1
             return(None)
         
         for i in range(self.n):

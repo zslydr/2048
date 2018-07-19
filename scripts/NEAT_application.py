@@ -10,9 +10,10 @@ import os
 import neat
 import importlib
 import numpy as np
+os.chdir('/Users/Raphael/Github/2048/scripts') #Select your working directory
+
 G_2048=importlib.import_module("2048_class")
 G_2048=importlib.reload(G_2048)
-os.chdir('/Users/Raphael/Github/2048/scripts') #Select your working directory
 cwd = os.getcwd()
 
 #%%
@@ -24,14 +25,15 @@ def score_weight(game, net):
     while game.state == 1 and stuck == False: # While the game is not lost and not stuck
         stuck = True
         previous_grid = game.grid # to test whether the game is stuck or not
-        previous_score = game.score()
         p = net.activate(game.grid.reshape(16))
         action_ind = np.array(p).argmax() # Get the action index to perform
         action = [game.up,game.down,game.right,game.left][action_ind] # Select the action to perform
         action() # Perform the action
         if (previous_grid != game.grid).any() or (game.grid == 0).any(): #Check if the game is not stuck
             stuck = False
-        s = s + game.score() - previous_score
+    s = game.score()
+    if stuck and game.state == 1:
+        s = s - s/2
     return(s)
 #%%
 def eval_genomes(genomes, config):

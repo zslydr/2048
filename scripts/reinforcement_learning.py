@@ -105,7 +105,7 @@ print(score)
 game.display()
 
 #%%
-model = NN.NNet(16,4,2,(16,))
+model = NN.NNet(16,4,1,(16,))
 sigma = 100
 mu = 0
 n_pop = 50

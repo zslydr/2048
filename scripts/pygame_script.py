@@ -9,6 +9,7 @@ import os
 import importlib
 import seaborn as sns
 import numpy as np
+import time
 os.chdir('/Users/Raphael/Github/2048/scripts/') #Select your working directory
 cwd = os.getcwd()
 G_2048=importlib.import_module("2048_class")
@@ -32,8 +33,8 @@ values = [0] + [2**x for x in range(1,15)]
 
 
 # This sets the WIDTH and HEIGHT of each grid location
-WIDTH = 100
-HEIGHT = WIDTH
+WIDTH_grid = 100
+HEIGHT_grid = WIDTH_grid
  
 # This sets the margin between each cell
 MARGIN = 5
@@ -41,7 +42,9 @@ MARGIN = 5
 pygame.init()
  
 # Set the width and height of the screen [width, height]
-size = [(WIDTH)*game.n + 5 * MARGIN, (WIDTH)*game.n + 5 * MARGIN]
+size_grid = [(WIDTH_grid)*game.n + 5 * MARGIN, (HEIGHT_grid)*game.n + 5 * MARGIN]
+size = size_grid
+size[1] += 100
 screen = pygame.display.set_mode(size)
  
 pygame.display.set_caption("My Game")
@@ -77,13 +80,19 @@ while not done:
             ind_color = values.index(int(game.grid[row,column])) # COLOR INDEX FROM LIST OF POSSIBLE VALUES
             pygame.draw.rect(screen,
                              np.floor(np.dot(colors[ind_color],255)),
-                             [(MARGIN + WIDTH) * column + MARGIN,
-                              (MARGIN + HEIGHT) * row + MARGIN,
-                              WIDTH,
-                              HEIGHT])
-            textsurface = my_font.render(str(int(game.grid[row,column])), False, font_color)
-            screen.blit(textsurface, ((MARGIN + WIDTH) * column + MARGIN+5,(MARGIN + HEIGHT) * row + MARGIN + 5))
-
+                             [(MARGIN + WIDTH_grid) * column + MARGIN,
+                              (MARGIN + HEIGHT_grid) * row + MARGIN,
+                              WIDTH_grid,
+                              HEIGHT_grid])
+            textsurface = my_font.render(str(int(game.grid[row,column])), True, font_color)
+            screen.blit(textsurface, ((MARGIN + WIDTH_grid) * column + MARGIN+5,(MARGIN + HEIGHT_grid) * row + MARGIN + 5))
+    
+    
+    textsurface = my_font.render("Fitness = "+str(game.score()), True, font_color)
+    screen.blit(textsurface, (size[0]/2 - 50 , size[1] - 50))
+    
+    #time.sleep(0.1)
+    #game.next_state()
  
     pygame.display.flip()
  
