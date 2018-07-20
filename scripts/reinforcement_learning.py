@@ -24,20 +24,25 @@ NN=importlib.reload(NN)
 # SCORE FUNCTION BASED ON THE WEIGHTS OF THE NN
 def score_weight(game, model, W):
     # Indicate if the game is stuck (because NN can loop over a useless move without the game being lost)
-    stuck = False 
-    s = 0
+    stuck = False
+    bad_move_cmpt = 0
+    penality = 0
     while game.state == 1 and stuck == False: # While the game is not lost and not stuck
         stuck = True
         previous_grid = game.grid # to test whether the game is stuck or not
-        previous_score = game.score()
-        p = model.forward(game.grid.reshape(16),W) # Forward propagation with the grid as input
+        p = model.forward(np.append(game.grid, bad_move_cmpt),W) # Forward propagation with the grid as input
         action_ind = p.argmax() # Get the action index to perform
         action = [game.up,game.down,game.right,game.left][action_ind] # Select the action to perform
         action() # Perform the action
         if (previous_grid != game.grid).any() or (game.grid == 0).any(): #Check if the game is not stuck
+            bad_move_cmpt = 0
             stuck = False
-        s = s + game.score() - previous_score
-    return(s)
+        if stuck == True:
+            bad_move_cmpt += 1
+            if bad_move_cmpt < 20:
+                stuck = False
+        penality += bad_move_cmpt
+    return(game.score - penality)
 
 # FUNCTION TO BREED TWO  NEURAL NETWORK WEIGHTS
 def breed(W1, W2, nb_children):
@@ -63,8 +68,8 @@ def mutation(W, sigma, mu):
         new_w = np.array([])
         for x in w.reshape(np.product(w.shape)):
             if np.random.uniform() < .1:
-                #new_w = np.append(new_w, sigma * np.random.randn() + mu)
-                new_w = np.append(new_w, 0)
+                new_w = np.append(new_w, sigma * np.random.randn() + mu)
+                #new_w = np.append(new_w, 0)
             else:
                 new_w = np.append(new_w, x)
         new_w = new_w.reshape(w.shape)
@@ -105,7 +110,7 @@ print(score)
 game.display()
 
 #%%
-model = NN.NNet(16,4,1,(16,))
+model = NN.NNet(17,4,1,(16,))
 sigma = 100
 mu = 0
 n_pop = 50

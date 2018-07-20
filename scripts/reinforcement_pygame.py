@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sun Jul 15 09:00:03 2018
+Created on Thu Jul 19 15:17:48 2018
 
 @author: Raphael
 """
@@ -10,14 +10,17 @@ import importlib
 import seaborn as sns
 import numpy as np
 import time
+import pygame
+import pickle
 os.chdir('/Users/Raphael/Github/2048/scripts/') #Select your working directory
 cwd = os.getcwd()
 G_2048=importlib.import_module("2048_class")
 G_2048=importlib.reload(G_2048)
 
 game = G_2048.Game_2048(4)
- 
-import pygame
+
+with open('winner_net.pickle', 'rb') as f:
+    winner_net = pickle.load(f)
 
 pygame.font.init()
 my_font = pygame.font.Font(None, 32)
@@ -54,23 +57,22 @@ done = False
  
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
- 
+begin = False
+penality = 0
+bad_move_cmpt = 0
+stuck = False 
+actions = []
 # -------- Main Program Loop -----------
 while not done:
+    
     # --- Main event loop
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
         if event.type == pygame.KEYUP and event.key == pygame.K_DOWN:
-            game.down()
-        if event.type == pygame.KEYUP and event.key == pygame.K_UP:
-            game.up()
-        if event.type == pygame.KEYUP and event.key == pygame.K_RIGHT:
-            game.right()
-        if event.type == pygame.KEYUP and event.key == pygame.K_LEFT:
-            game.left()
+            begin = True
             
-            
+    
     screen.fill(WHITE)
     
     # DRAW THE GRID
@@ -88,12 +90,38 @@ while not done:
             screen.blit(textsurface, ((MARGIN + WIDTH_grid) * column + MARGIN+5,(MARGIN + HEIGHT_grid) * row + MARGIN + 5))
     
     
-    textsurface = my_font.render("Fitness = "+str(game.score), True, font_color)
-    screen.blit(textsurface, (size[0]/2 - 50 , size[1] - 50))
+    textsurface = my_font.render("Fitness = "+str(game.score - penality), True, font_color)
+    screen.blit(textsurface, (size[0]/2 - 50 , size[1] - 75))
     
+    textsurface = my_font.render("Score = "+str(game.score), True, font_color)
+    screen.blit(textsurface, (size[0]/2 - 50 , size[1] - 55))
+    
+    
+    if begin == True:
+        if game.state == 1 and stuck == False:
+            stuck = True
+            previous_grid = game.grid # to test whether the game is stuck or not
+            p = winner_net.activate(np.append(game.grid, [bad_move_cmpt**2, np.count_nonzero(game.grid)]))
+            action_ind = np.array(p).argmax() # Get the action index to perform
+            actions.append(action_ind)
+            action = [game.up,game.down,game.right,game.left][action_ind] # Select the action to perform
+            action() # Perform the action
+            if (previous_grid != game.grid).any() or (game.grid == 0).any(): #Check if the game is not stuck
+                bad_move_cmpt = 0
+                penality = 0
+                stuck = False
+            if stuck == True:
+                bad_move_cmpt += 1
+                if bad_move_cmpt < 20:
+                    stuck = False
+            penality += bad_move_cmpt
+        else:
+            textsurface = my_font.render("Neural net stuck", True, font_color)
+            screen.blit(textsurface, (size[0]/2 - 50 , size[1] - 35))
+
     #time.sleep(0.1)
     #game.next_state()
- 
+    time.sleep(0.1)
     pygame.display.flip()
  
     # --- Limit to 10 frames per second
@@ -101,3 +129,4 @@ while not done:
  
 # Close the window and quit.
 pygame.quit()
+sns.countplot(actions)

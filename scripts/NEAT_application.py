@@ -21,20 +21,24 @@ cwd = os.getcwd()
 def score_weight(game, net):
     # Indicate if the game is stuck (because NN can loop over a useless move without the game being lost)
     stuck = False 
-    s = 0
+    penality = 0
+    bad_move_cmpt = 0
     while game.state == 1 and stuck == False: # While the game is not lost and not stuck
         stuck = True
         previous_grid = game.grid # to test whether the game is stuck or not
-        p = net.activate(game.grid.reshape(16))
+        p = net.activate(np.append(game.grid, [bad_move_cmpt**2,np.count_nonzero(game.grid)]))
         action_ind = np.array(p).argmax() # Get the action index to perform
         action = [game.up,game.down,game.right,game.left][action_ind] # Select the action to perform
         action() # Perform the action
         if (previous_grid != game.grid).any() or (game.grid == 0).any(): #Check if the game is not stuck
+            bad_move_cmpt = 0
             stuck = False
-    s = game.score()
-    if stuck and game.state == 1:
-        s = s - s/2
-    return(s)
+        if stuck == True:
+            bad_move_cmpt += 1
+            if bad_move_cmpt < np.floor(np.log(1 + game.score)):
+                stuck = False
+        penality += bad_move_cmpt - ((game.n**2 - np.count_nonzero(game.grid))*game.score)*0.01
+    return(game.score - penality)
 #%%
 def eval_genomes(genomes, config):
     for genome_id, genome in genomes:
@@ -56,10 +60,10 @@ def run(config_file):
     p.add_reporter(neat.StdOutReporter(True))
     stats = neat.StatisticsReporter()
     p.add_reporter(stats)
-    p.add_reporter(neat.Checkpointer(5))
+    #p.add_reporter(neat.Checkpointer(5))
 
     # Run for up to 300 generations.
-    winner = p.run(eval_genomes, 300)
+    winner = p.run(eval_genomes, 500)
 
     # Display the winning genome.
     print('\nBest genome:\n{!s}'.format(winner))
@@ -70,5 +74,12 @@ def run(config_file):
 winner = run("config-feedforward.txt")
 
 #%%
+config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
+                     neat.DefaultSpeciesSet, neat.DefaultStagnation,
+                     "config-feedforward.txt")
+winner_net = neat.nn.FeedForwardNetwork.create(winner, config)
 
+import pickle
+with open('winner_net.pickle', 'wb') as f:
+    pickle.dump(winner_net, f, protocol=pickle.HIGHEST_PROTOCOL)
 
