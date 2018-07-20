@@ -25,12 +25,11 @@ def score_weight(game, net):
     bad_move_cmpt = 0
     while game.state == 1 and stuck == False: # While the game is not lost and not stuck
         stuck = True
-        previous_grid = game.grid # to test whether the game is stuck or not
         p = net.activate(np.append(game.grid, [bad_move_cmpt**2,np.count_nonzero(game.grid)]))
         action_ind = np.array(p).argmax() # Get the action index to perform
         action = [game.up,game.down,game.right,game.left][action_ind] # Select the action to perform
         action() # Perform the action
-        if (previous_grid != game.grid).any() or (game.grid == 0).any(): #Check if the game is not stuck
+        if game.changed: #Check if the game is not stuck
             bad_move_cmpt = 0
             stuck = False
         if stuck == True:

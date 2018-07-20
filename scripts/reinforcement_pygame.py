@@ -108,7 +108,7 @@ while not done:
             action = [game.up,game.down,game.right,game.left][action_ind] # Select the action to perform
             action() # Perform the action
             #print((previous_grid != game.grid).any())
-            if (previous_grid != game.grid).any() or (game.grid == 0).any(): #Check if the game is not stuck
+            if game.changed: #Check if the game is not stuck
                 bad_move_cmpt = 0
                 penality = 0
                 stuck = False
@@ -119,13 +119,13 @@ while not done:
             penality += bad_move_cmpt
         else:
             textsurface = my_font.render("Neural net stuck", True, font_color)
-            screen.blit(textsurface, (size[0]/2 - 50 , size[1] - 35))
-        #print(bad_move_cmpt)
+        screen.blit(textsurface, (size[0]/2 - 50 , size[1] - 35))
+        rect = pygame.Rect(0, 0, WIDTH_grid * (row + 1), HEIGHT_grid * (column + 1))
+        sub = screen.subsurface(rect)
+        pygame.image.save(sub, "/Users/Raphael/Github/2048/resources/screenshots/" + "screenshot" + str(nb_it) + ".jpg")
+        nb_it += 1
     
-    rect = pygame.Rect(0, 0, WIDTH_grid * (row + 1), HEIGHT_grid * (column + 1))
-    sub = screen.subsurface(rect)
-    pygame.image.save(sub, "/Users/Raphael/Github/2048/screenshots/resources/" + "screenshot" + str(nb_it) + ".jpg")
-    nb_it += 1
+
     #time.sleep(0.1)
     #game.next_state()
     time.sleep(0.1)

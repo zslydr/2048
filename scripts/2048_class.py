@@ -35,8 +35,8 @@ class Game_2048(object):
         print("Game over, score: ",self.score)
         
     def next_state(self):
-        #and self.changed == True
-        if self.state == 1:
+        #
+        if self.state == 1 and self.changed == True:
             number = np.random.choice([2,4], 1, p = [0.8, 0.2])
             possible_next_position = []
             for i in range(self.n):
@@ -46,7 +46,6 @@ class Game_2048(object):
             if len(possible_next_position) != 0:
                 ind = np.random.randint(0,len(possible_next_position))
                 self.grid[possible_next_position[ind][0], possible_next_position[ind][1]] = number
-            #self.next_state()
             self.update_state()
         
     #def score(self):
