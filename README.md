@@ -6,5 +6,6 @@ The next step is to develop a pygame interface to test the game properly, and th
 
 ![2048 Gif](https://github.com/zslydr/2048/blob/master/resources/2048_AI.gif)
 
-
-.right[![Right-aligned image](https://github.com/zslydr/2048/blob/master/resources/2048_AI.gif?raw=true)]
+<p align="center">
+  <img src="https://github.com/zslydr/2048/blob/master/resources/2048_AI.gif?raw=true">
+</p>
