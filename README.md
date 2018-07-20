@@ -4,6 +4,4 @@ Genetic algorithm applied to neural networks to solve the 2048 game. The first r
 
 The next step is to develop a pygame interface to test the game properly, and then try to implement a NEAT algorithm (Neuroevolution of augmenting topologies), which fits better the context of genetic evolution applied to neural networks.
 
-<p align="center">
-![Alt Text](https://github.com/zslydr/2048/blob/master/resources/2048_AI.gif)
-</p>
+.center[![Alt Text](https://github.com/zslydr/2048/blob/master/resources/2048_AI.gif)]
