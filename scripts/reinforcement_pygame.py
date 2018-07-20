@@ -36,7 +36,7 @@ values = [0] + [2**x for x in range(1,15)]
 
 
 # This sets the WIDTH and HEIGHT of each grid location
-WIDTH_grid = 100
+WIDTH_grid = 150
 HEIGHT_grid = WIDTH_grid
  
 # This sets the margin between each cell
@@ -62,6 +62,7 @@ penality = 0
 bad_move_cmpt = 0
 stuck = False 
 actions = []
+nb_it = 0
 # -------- Main Program Loop -----------
 while not done:
     
@@ -106,6 +107,7 @@ while not done:
             actions.append(action_ind)
             action = [game.up,game.down,game.right,game.left][action_ind] # Select the action to perform
             action() # Perform the action
+            #print((previous_grid != game.grid).any())
             if (previous_grid != game.grid).any() or (game.grid == 0).any(): #Check if the game is not stuck
                 bad_move_cmpt = 0
                 penality = 0
@@ -118,7 +120,12 @@ while not done:
         else:
             textsurface = my_font.render("Neural net stuck", True, font_color)
             screen.blit(textsurface, (size[0]/2 - 50 , size[1] - 35))
-
+        #print(bad_move_cmpt)
+    
+    rect = pygame.Rect(0, 0, WIDTH_grid * (row + 1), HEIGHT_grid * (column + 1))
+    sub = screen.subsurface(rect)
+    pygame.image.save(sub, "/Users/Raphael/Github/2048/screenshots/resources/" + "screenshot" + str(nb_it) + ".jpg")
+    nb_it += 1
     #time.sleep(0.1)
     #game.next_state()
     time.sleep(0.1)
