@@ -119,11 +119,11 @@ while not done:
             penality += bad_move_cmpt
         else:
             textsurface = my_font.render("Neural net stuck", True, font_color)
-        screen.blit(textsurface, (size[0]/2 - 50 , size[1] - 35))
-        rect = pygame.Rect(0, 0, WIDTH_grid * (row + 1), HEIGHT_grid * (column + 1))
-        sub = screen.subsurface(rect)
-        pygame.image.save(sub, "/Users/Raphael/Github/2048/resources/screenshots/" + "screenshot" + str(nb_it) + ".jpg")
-        nb_it += 1
+            screen.blit(textsurface, (size[0]/2 - 50 , size[1] - 35))
+            rect = pygame.Rect(0, 0, WIDTH_grid * (row + 1), HEIGHT_grid * (column + 1))
+            sub = screen.subsurface(rect)
+            pygame.image.save(sub, "/Users/Raphael/Github/2048/resources/screenshots/" + "screenshot" + str(nb_it) + ".png")
+            nb_it += 1
     
 
     #time.sleep(0.1)
@@ -137,3 +137,28 @@ while not done:
 # Close the window and quit.
 pygame.quit()
 sns.countplot(actions)
+
+#%%
+ss_path = "/Users/Raphael/Github/2048/resources/screenshots/"
+from os import listdir
+from os.path import isfile, join
+ss_names = [ss_path + f for f in listdir(ss_path) if isfile(join(ss_path, f)) and f != '.DS_Store']
+
+#%%
+import imageio
+with imageio.get_writer('/Users/Raphael/Github/2048/resources/2048_AI2.gif', mode='I') as writer:
+    for ss_name in ss_names:
+        image = imageio.imread(ss_name)
+        writer.append_data(image)
+    
+#%%
+
+import os, shutil
+for ss_name in ss_names:
+    try:
+        if os.path.isfile(ss_name):
+            os.unlink(ss_name)
+        #elif os.path.isdir(file_path): shutil.rmtree(file_path)
+    except Exception as e:
+        print(e)
+        
