@@ -115,7 +115,8 @@ while not done:
                 screen.blit(textsurface, (size[0]/2 - 50 , size[1] - 35))
                 rect = pygame.Rect(0, 0, WIDTH_grid * (row + 1), HEIGHT_grid * (column + 1))
                 sub = screen.subsurface(rect)
-                pygame.image.save(sub, "/Users/Raphael/Github/2048/resources/screenshots/" + "screenshot" + str(time.time()).replace('.','') + ".png")
+                pygame.image.save(sub, "/Users/Raphael/Github/2048/resources/screenshots/" + "screenshot" + str(nb_it) + ".png")
+                nb_it += 1
             if stuck == True:
                 bad_move_cmpt += 1
                 if bad_move_cmpt < 20:
@@ -138,13 +139,21 @@ while not done:
  
 # Close the window and quit.
 pygame.quit()
-sns.countplot(actions)
+#sns.countplot(actions)
 
 #%%
 ss_path = "/Users/Raphael/Github/2048/resources/screenshots/"
 from os import listdir
 from os.path import isfile, join
 ss_names = [ss_path + f for f in listdir(ss_path) if isfile(join(ss_path, f)) and f != '.DS_Store']
+
+d={}
+for i in range(len(ss_names)):
+    d[int(ss_names[i][:-4][59:])] = ss_names[i]
+
+ss_names = []
+for key in sorted(d):
+    ss_names.append(d[key])
 
 #%%
 import imageio
@@ -163,5 +172,5 @@ for ss_name in ss_names:
         #elif os.path.isdir(file_path): shutil.rmtree(file_path)
     except Exception as e:
         print(e)
-#%%
-        
+
+
