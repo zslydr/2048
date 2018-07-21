@@ -11,7 +11,7 @@ Below is the first "decent" result obtained from the NEAT algorithm:
   <img src="https://github.com/zslydr/2048/blob/master/resources/2048_AI.gif?raw=true">
 </p>
 
-## Summary 
+## Development 
 
 Develop game :white_check_mark:
 
