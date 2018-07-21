@@ -13,7 +13,7 @@ Below is the first "decent" result obtained from the NEAT algorithm:
 
 ## Development 
 
-Develop game :white_check_mark:
+Develop game :heavy_check_mark:
 
 Applying a basic genetic algorithm :heavy_check_mark:
 
@@ -22,3 +22,7 @@ Develop pygame interface :heavy_check_mark:
 Applying NEAT algorithm :heavy_check_mark:
 
 Pygame support for AI :heavy_check_mark:
+
+Visualize network in pygame :soon:
+
+Vizualize progress made over generations :soon:
