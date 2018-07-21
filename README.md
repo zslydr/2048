@@ -17,8 +17,8 @@ Develop game :white_check_mark:
 
 Applying a basic genetic algorithm :white_check_mark:
 
-Develop pygame interface :white_check_mark:
+Develop pygame interface :heavy_check_mark:
 
 Applying NEAT algorithm :white_check_mark:
 
-Pygame support for AI :white_check_mark:
+Pygame support for AI :heavy_check_mark:
