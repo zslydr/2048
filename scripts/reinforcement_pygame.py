@@ -12,6 +12,10 @@ import numpy as np
 import time
 import pygame
 import pickle
+import neat
+import imageio
+import shutil
+
 os.chdir('/Users/Raphael/Github/2048/scripts/') #Select your working directory
 cwd = os.getcwd()
 G_2048=importlib.import_module("2048_class")
@@ -19,8 +23,16 @@ G_2048=importlib.reload(G_2048)
 
 game = G_2048.Game_2048(4)
 
-with open('winner_net.pickle', 'rb') as f:
-    winner_net = pickle.load(f)
+with open('genome.pickle', 'rb') as f:
+    genome = pickle.load(f)
+
+
+config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
+                     neat.DefaultSpeciesSet, neat.DefaultStagnation,
+                     "config-feedforward.txt")
+
+network = neat.nn.FeedForwardNetwork.create(genome, config)
+
 
 pygame.font.init()
 my_font = pygame.font.Font(None, 32)
@@ -36,7 +48,7 @@ values = [0] + [2**x for x in range(1,15)]
 
 
 # This sets the WIDTH and HEIGHT of each grid location
-WIDTH_grid = 150
+WIDTH_grid = 100
 HEIGHT_grid = WIDTH_grid
  
 # This sets the margin between each cell
@@ -102,7 +114,7 @@ while not done:
         if game.state == 1 and stuck == False:
             stuck = True
             previous_grid = game.grid # to test whether the game is stuck or not
-            p = winner_net.activate(np.append(game.grid, [bad_move_cmpt**2, np.count_nonzero(game.grid)]))
+            p = network.activate(np.append(game.grid, [bad_move_cmpt**2, np.count_nonzero(game.grid)]))
             action_ind = np.array(p).argmax() # Get the action index to perform
             actions.append(action_ind)
             action = [game.up,game.down,game.right,game.left][action_ind] # Select the action to perform
@@ -110,9 +122,8 @@ while not done:
             #print((previous_grid != game.grid).any())
             if game.changed: #Check if the game is not stuck
                 bad_move_cmpt = 0
-                penality = 0
+                #penality = 0
                 stuck = False
-                screen.blit(textsurface, (size[0]/2 - 50 , size[1] - 35))
                 rect = pygame.Rect(0, 0, WIDTH_grid * (row + 1), HEIGHT_grid * (column + 1))
                 sub = screen.subsurface(rect)
                 pygame.image.save(sub, "/Users/Raphael/Github/2048/resources/screenshots/" + "screenshot" + str(nb_it) + ".png")
@@ -141,7 +152,7 @@ while not done:
 pygame.quit()
 #sns.countplot(actions)
 
-#%%
+
 ss_path = "/Users/Raphael/Github/2048/resources/screenshots/"
 from os import listdir
 from os.path import isfile, join
@@ -155,16 +166,13 @@ ss_names = []
 for key in sorted(d):
     ss_names.append(d[key])
 
-#%%
-import imageio
-with imageio.get_writer('/Users/Raphael/Github/2048/resources/2048_AI.gif', mode='I') as writer:
+
+with imageio.get_writer('/Users/Raphael/Github/2048/resources/last_run.gif', mode='I') as writer:
     for ss_name in ss_names:
         image = imageio.imread(ss_name)
         writer.append_data(image)
     
-#%%
 
-import os, shutil
 for ss_name in ss_names:
     try:
         if os.path.isfile(ss_name):
