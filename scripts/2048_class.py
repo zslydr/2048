@@ -11,7 +11,7 @@ def superposition_layer(l1,l2, e1, e2, s, changed):
             l2[i] = 0
         elif l1[i] == l2[i]:
             if l1[i] > 0 and e1[i] == False and e2[i] == False:
-                s = s + l1[i]*2
+                s = s + l1[i]*2**2
                 l1[i] = l1[i]*2
                 l2[i] = 0
                 e1[i] = True

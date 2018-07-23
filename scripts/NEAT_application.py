@@ -26,7 +26,7 @@ def score_weight(game, net):
     bad_move_cmpt = 0
     while game.state == 1 and stuck == False: # While the game is not lost and not stuck
         stuck = True
-        p = net.activate(np.append(game.grid, [bad_move_cmpt**2, np.count_nonzero(game.grid)]))
+        p = net.activate(np.append(game.grid, [bad_move_cmpt**2, np.count_nonzero(game.grid)])) #
         action_ind = np.array(p).argmax() # Get the action index to perform
         action = [game.up,game.down,game.right,game.left][action_ind] # Select the action to perform
         action() # Perform the action
@@ -37,7 +37,9 @@ def score_weight(game, net):
             bad_move_cmpt += 1
             if bad_move_cmpt < 20:
                 stuck = False
-        penality += bad_move_cmpt * np.floor(np.log(1 + game.score)) - ((game.n**2 - np.count_nonzero(game.grid))*game.score)*0.01
+        #print(game.n**2 - np.count_nonzero(game.grid))
+        penality += bad_move_cmpt * np.floor(np.log(1 + game.score))
+        penality += - (game.n**2 - np.count_nonzero(game.grid)) * game.score * 0.01
     return(game.score - penality)
 
 def eval_genomes(genomes, config):

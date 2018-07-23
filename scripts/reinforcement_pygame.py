@@ -102,10 +102,11 @@ while not done:
             textsurface = my_font.render(str(int(game.grid[row,column])), True, font_color)
             screen.blit(textsurface, ((MARGIN + WIDTH_grid) * column + MARGIN+5,(MARGIN + HEIGHT_grid) * row + MARGIN + 5))
     
-    
+    # Show fitness
     textsurface = my_font.render("Fitness = "+str(game.score - penality), True, font_color)
     screen.blit(textsurface, (size[0]/2 - 50 , size[1] - 75))
     
+    # Show score
     textsurface = my_font.render("Score = "+str(game.score), True, font_color)
     screen.blit(textsurface, (size[0]/2 - 50 , size[1] - 55))
     
@@ -142,7 +143,7 @@ while not done:
 
     #time.sleep(0.1)
     #game.next_state()
-    time.sleep(0.1)
+    time.sleep(0.05)
     pygame.display.flip()
  
     # --- Limit to 10 frames per second
